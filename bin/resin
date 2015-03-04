@@ -1,4 +1,7 @@
-#!/bin/bash
+:<<"::CMDLITERAL"
+@ECHO OFF
+GOTO :CMDSCRIPT
+::CMDLITERAL
 
 function unsupported_platform() {
   echo "Your platform (`uname -a`) is not supported." && exit 1
@@ -62,3 +65,19 @@ if [ ! -x $NODE_PATH  ]; then
 fi
 
 $NODE_PATH "$BIN_DIRECTORY/../build/app.js" "$@"
+
+# Used to prevent the shell from keep reading to the batch script below
+exit $?
+
+:CMDSCRIPT
+
+:: http://stackoverflow.com/questions/12322308/batch-file-to-check-64bit-or-32bit-os
+reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && set ARCH=x86 || set ARCH=x64
+
+set NODE_PATH="%~dp0\node\node-win32-%ARCH%.exe"
+
+@IF NOT EXIST %NODE_PATH% (
+	set NODE_PATH="node.exe"
+)
+
+%NODE_PATH% "%~dp0\..\build\app.js" %*
