@@ -5,6 +5,7 @@ resin = require('resin-sdk')
 visuals = require('resin-cli-visuals')
 commandOptions = require('./command-options')
 vcs = require('resin-vcs')
+form = require('resin-cli-form')
 
 exports.create =
 	signature: 'app create <name>'
@@ -211,12 +212,12 @@ exports.init =
 
 			(callback) ->
 				currentDirectoryBasename = path.basename(currentDirectory)
-				visuals.form.ask
-					label: 'What is the name of your application?'
+				form.ask
+					message: 'What is the name of your application?'
 					name: 'application'
 					type: 'text'
 					value: currentDirectoryBasename
-				, callback
+				.nodeify callback
 
 			(applicationName, callback) ->
 

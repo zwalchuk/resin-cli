@@ -1,5 +1,5 @@
 (function() {
-  var _, async, commandOptions, path, resin, vcs, visuals;
+  var _, async, commandOptions, form, path, resin, vcs, visuals;
 
   path = require('path');
 
@@ -14,6 +14,8 @@
   commandOptions = require('./command-options');
 
   vcs = require('resin-vcs');
+
+  form = require('resin-cli-form');
 
   exports.create = {
     signature: 'app create <name>',
@@ -149,12 +151,12 @@
         function(callback) {
           var currentDirectoryBasename;
           currentDirectoryBasename = path.basename(currentDirectory);
-          return visuals.form.ask({
-            label: 'What is the name of your application?',
+          return form.ask({
+            message: 'What is the name of your application?',
             name: 'application',
             type: 'text',
             value: currentDirectoryBasename
-          }, callback);
+          }).nodeify(callback);
         }, function(applicationName, callback) {
           return exports.create.action({
             name: applicationName

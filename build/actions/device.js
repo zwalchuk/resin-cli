@@ -1,5 +1,5 @@
 (function() {
-  var _, async, capitano, commandOptions, deviceConfig, fse, image, inject, manager, path, pine, registerDevice, resin, tmp, vcs, visuals;
+  var _, async, capitano, commandOptions, deviceConfig, form, fse, image, inject, manager, path, pine, registerDevice, resin, tmp, vcs, visuals;
 
   fse = require('fs-extra');
 
@@ -30,6 +30,8 @@
   tmp = require('tmp');
 
   deviceConfig = require('resin-device-config');
+
+  form = require('resin-cli-form');
 
   tmp.setGracefulCleanup();
 
@@ -107,11 +109,11 @@
           if (!_.isEmpty(params.newName)) {
             return callback(null, params.newName);
           }
-          return visuals.form.ask({
-            label: 'How do you want to name this device?',
+          return form.ask({
+            message: 'How do you want to name this device?',
             name: 'device',
             type: 'text'
-          }, callback);
+          }).nodeify(callback);
         }, function(newName, callback) {
           return resin.models.device.rename(params.uuid, newName).nodeify(callback);
         }

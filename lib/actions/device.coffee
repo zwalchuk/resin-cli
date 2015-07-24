@@ -13,6 +13,7 @@ registerDevice = require('resin-register-device')
 pine = require('resin-pine')
 tmp = require('tmp')
 deviceConfig = require('resin-device-config')
+form = require('resin-cli-form')
 
 # Cleanup the temporary files even when an uncaught exception occurs
 tmp.setGracefulCleanup()
@@ -151,11 +152,11 @@ exports.rename =
 				if not _.isEmpty(params.newName)
 					return callback(null, params.newName)
 
-				visuals.form.ask
-					label: 'How do you want to name this device?'
+				form.ask
+					message: 'How do you want to name this device?'
 					name: 'device'
 					type: 'text'
-				, callback
+				.nodeify callback
 
 			(newName, callback) ->
 				resin.models.device.rename(params.uuid, newName).nodeify(callback)
