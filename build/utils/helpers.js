@@ -1,5 +1,5 @@
 (function() {
-  var Promise, _, capitano, chalk, child_process, os;
+  var Promise, _, capitano, chalk, child_process, os, windosu;
 
   Promise = require('bluebird');
 
@@ -14,6 +14,8 @@
   os = require('os');
 
   chalk = require('chalk');
+
+  windosu = require('windosu');
 
   exports.getOperatingSystem = function() {
     var platform;
@@ -50,10 +52,12 @@
 
   exports.sudo = function(command) {
     var spawn;
-    if (os.platform() === 'win32') {
-      return capitano.runAsync(command.join(' '));
-    }
     command = _.union(_.take(process.argv, 2), command);
+    if (os.platform() === 'win32') {
+      return Promise.fromNode(function(callback) {
+        return windosu(command, {}, callback);
+      });
+    }
     spawn = child_process.spawn('sudo', command, {
       stdio: 'inherit'
     });

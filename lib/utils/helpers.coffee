@@ -5,6 +5,7 @@ _.str = require('underscore.string')
 child_process = require('child_process')
 os = require('os')
 chalk = require('chalk')
+windosu = require('windosu')
 
 exports.getOperatingSystem = ->
 	platform = os.platform()
@@ -32,13 +33,11 @@ exports.waitStream = (stream) ->
 		stream.on('error', reject)
 
 exports.sudo = (command) ->
-
-	# Bypass privilege elevation for Windows for now.
-	# We should use `windosu` in this case.
-	if os.platform() is 'win32'
-		return capitano.runAsync(command.join(' '))
-
 	command = _.union(_.take(process.argv, 2), command)
+
+	if os.platform() is 'win32'
+		return Promise.fromNode (callback) ->
+			windosu(command, {}, callback)
 
 	spawn = child_process.spawn 'sudo', command,
 		stdio: 'inherit'
