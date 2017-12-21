@@ -181,9 +181,14 @@ exports.buildProject = (
 	renderer.start()
 
 	qemu.installQemuIfNeeded(emulated, logger)
+	.tap (needsQemu) ->
+		return if not needsQemu
+		logger.logInfo('Emulation is enabled')
+		# Copy qemu into all build contexts
+		Promise.map imageDescriptors, (d) ->
+			return if not d.image.context? # external image
+			return qemu.copyQemu(path.join(projectPath, d.image.context))
 	.then (needsQemu) ->
-		if needsQemu
-			logger.logInfo('Emulation is enabled')
 		# Tar up the directory, ready for the build stream
 		tarDirectory(projectPath)
 		.then (tarStream) ->
